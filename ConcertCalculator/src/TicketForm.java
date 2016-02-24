@@ -1,6 +1,6 @@
 /**
  *
- * @author nick
+ * @author Nicholas Bollong
  */
 import javax.swing.*;
 import java.awt.*;
@@ -8,6 +8,7 @@ import java.awt.event.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import net.java.dev.designgridlayout.DesignGridLayout;
 
 
 public class TicketForm extends JFrame {
@@ -27,6 +28,7 @@ public class TicketForm extends JFrame {
     private JButton btnCount;
     private JButton btnCancel;
     private JTextArea txtOutput;
+    private JScrollPane outputPanel;
     
     private JLabel lblBottom;
     private JLabel lblPrompt1;
@@ -35,6 +37,8 @@ public class TicketForm extends JFrame {
     private JLabel lblPrompt4;
     private JLabel lblPrompt5;
     
+    DesignGridLayout layout;
+    ReportPrice reportPrice = new ReportPrice(this);
 
     // private variables
     private Boolean firstEdit;
@@ -43,6 +47,7 @@ public class TicketForm extends JFrame {
         TicketForm numCount = new TicketForm();
         numCount.setVisible(true);
         numCount.setResizable(false);
+        
     }
 
     public TicketForm() {
@@ -54,39 +59,43 @@ public class TicketForm extends JFrame {
         
         
         lblBottom = new JLabel();
-        lblPrompt1 = new JLabel("Count");
-        lblPrompt2 = new JLabel("Price ($)");
-        lblPrompt3 = new JLabel("Enter For Seat A: ");
-        lblPrompt4 = new JLabel("Enter For Seat B: ");
-        lblPrompt5 = new JLabel("Enter For Seat C: ");
+        lblPrompt1 = new JLabel("                                       Count");
+        lblPrompt2 = new JLabel("                    Price ($)");
+        lblPrompt3 = new JLabel("Enter For Seat A:");
+        lblPrompt4 = new JLabel("Enter For Seat B:");
+        lblPrompt5 = new JLabel("Enter For Seat C:");
         
         firstEdit = true;
-        
-        
-
+       
         btnCount = new JButton("Create Report");
-        btnCount.setFont(new Font("Courier", Font.PLAIN, 14));
+        btnCount.setFont(new Font("Courier", Font.BOLD, 14));
         btnCount.setLocation(50, 50);
         btnCount.setSize(200, 200);
         btnCount.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               
+               txtOutput.setText(reportPrice.getReport());
             }
         });
 
         btnCancel = new JButton("Reset");
         btnCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
+                txtNum1.setText("");
+                txtNum2.setText("");
+                txtNum3.setText("");
+                txtNum4.setText("");
+                txtNum5.setText("");
+                txtNum6.setText("");
+                txtOutput.setText("");
             }
         });
-        btnCancel.setFont(new Font("Courier", Font.PLAIN, 14));
+        btnCancel.setFont(new Font("Courier", Font.BOLD, 14));
         btnCancel.setLocation(50, 50);
         btnCancel.setSize(200, 200);
 
         txtNum1 = new JTextField();
         txtNum1.setColumns(12);
-        txtNum1.setFont(new Font("Courier", Font.PLAIN, 14));
+        txtNum1.setFont(new Font("Mono", Font.PLAIN, 14));
         
         txtNum2 = new JTextField();
         txtNum2.setColumns(12);
@@ -110,9 +119,9 @@ public class TicketForm extends JFrame {
 
         txtOutput = new JTextArea();
         txtOutput.setBorder(BorderFactory.createTitledBorder("Report"));
-        txtOutput.setColumns(35);
-        txtOutput.setRows(20);
-        txtOutput.setFont(new Font("Courier", Font.BOLD, 10));
+        txtOutput.setColumns(54);
+        txtOutput.setRows(18);
+        txtOutput.setFont(new Font("Monospaced", Font.BOLD, 12));
         txtOutput.setEditable(false);
         txtOutput.setLineWrap(true);
         txtOutput.setWrapStyleWord(true);
@@ -124,30 +133,17 @@ public class TicketForm extends JFrame {
         // construct inputPanel JPanel to hold input controls
         JPanel inputPanel = new JPanel();
         inputPanel.setBorder(BorderFactory.createTitledBorder("Enter Data"));
-        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.LINE_AXIS));
-        
-        
-        inputPanel.add(lblPrompt1);
-        inputPanel.add(lblPrompt2);
-        
-        inputPanel.add(lblPrompt3);
-        inputPanel.add(txtNum1);
-        inputPanel.add(txtNum2);
-        
-        inputPanel.add(lblPrompt4);
-        inputPanel.add(txtNum3);
-        inputPanel.add(txtNum4);
-        
-        inputPanel.add(lblPrompt5);
-        inputPanel.add(txtNum5);
-        inputPanel.add(txtNum6);
-        
+        layout = new DesignGridLayout(inputPanel);
+       
+        layout.row().grid().add(lblPrompt1).add(lblPrompt2);
+        layout.row().grid().add(lblPrompt3).add(txtNum1).add(txtNum2);
+        layout.row().grid().add(lblPrompt4).add(txtNum3).add(txtNum4);
+        layout.row().grid().add(lblPrompt5).add(txtNum5).add(txtNum6); 
         
         
         // construct the outputPanel JPanel to hold output controls
-        JPanel outputPanel = new JPanel();
-        outputPanel.add(lblBottom);
-        outputPanel.add(txtOutput);
+        outputPanel = new JScrollPane(txtOutput);
+        
 
         // construct buttonPanel to hold the buttons
         JPanel buttonPanel = new JPanel();
@@ -160,107 +156,37 @@ public class TicketForm extends JFrame {
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
         contentPanel.add(outputPanel, BorderLayout.CENTER);
         
+    }
 
+    public JTextField getTxtNum1() {
+        return txtNum1;
+    }
+
+    public JTextField getTxtNum2() {
+        return txtNum2;
+    }
+
+    public JTextField getTxtNum3() {
+        return txtNum3;
+    }
+
+    public JTextField getTxtNum4() {
+        return txtNum4;
+    }
+
+    public JTextField getTxtNum5() {
+        return txtNum5;
+    }
+
+    public JTextField getTxtNum6() {
+        return txtNum6;
     }
 
 
-        // ------------------------------------------- event handlers
-    public void actionPerformed(ActionEvent event) {
-
-        if ((event.getSource() == btnCount) || (event.getSource() == txtNum1)) {
-            // click ok or enter on textfield
-            if (firstEdit == true){
-                txtOutput.setText(txtNum1.getText() + " ");
-                firstEdit = false;
-            } else {
-                txtOutput.append(txtNum1.getText() + " ");
-            }
-        } else {
-            // click reset
-            txtNum1.setText("");
-            txtNum1.requestFocusInWindow();
-            firstEdit = true;
-        }
-        
-        
-         if ((event.getSource() == btnCount) || (event.getSource() == txtNum2)) {
-            // click ok or enter on textfield
-            if (firstEdit == true){
-                txtOutput.setText(txtNum2.getText() + " ");
-                firstEdit = false;
-            } else {
-                txtOutput.append(txtNum2.getText() + " ");
-            }
-        } else {
-            // click reset
-            txtNum2.setText("");
-            txtNum2.requestFocusInWindow();
-            firstEdit = true;
-        }
-        
-          if ((event.getSource() == btnCount) || (event.getSource() == txtNum3)) {
-            // click ok or enter on textfield
-            if (firstEdit == true){
-                txtOutput.setText(txtNum3.getText() + " ");
-                firstEdit = false;
-            } else {
-                txtOutput.append(txtNum3.getText() + " ");
-            }
-        } else {
-            // click reset
-            txtNum3.setText("");
-            txtNum3.requestFocusInWindow();
-            firstEdit = true;
-        }
-         
-          if ((event.getSource() == btnCount) || (event.getSource() == txtNum4)) {
-            // click ok or enter on textfield
-            if (firstEdit == true){
-                txtOutput.setText(txtNum4.getText() + " ");
-                firstEdit = false;
-            } else {
-                txtOutput.append(txtNum4.getText() + " ");
-            }
-        } else {
-            // click reset
-            txtNum4.setText("");
-            txtNum4.requestFocusInWindow();
-            firstEdit = true;
-        }
-          
-           if ((event.getSource() == btnCount) || (event.getSource() == txtNum5)) {
-            // click ok or enter on textfield
-            if (firstEdit == true){
-                txtOutput.setText(txtNum5.getText() + " ");
-                firstEdit = false;
-            } else {
-                txtOutput.append(txtNum5.getText() + " ");
-            }
-        } else {
-            // click reset
-            txtNum5.setText("");
-            txtNum5.requestFocusInWindow();
-            firstEdit = true;
-        }
-          
-           if ((event.getSource() == btnCount) || (event.getSource() == txtNum6)) {
-            // click ok or enter on textfield
-            if (firstEdit == true){
-                txtOutput.setText(txtNum6.getText() + " ");
-                firstEdit = false;
-            } else {
-                txtOutput.append(txtNum6.getText() + " ");
-            }
-        } else {
-            // click reset
-            txtNum6.setText("");
-            txtNum6.requestFocusInWindow();
-            firstEdit = true;
-        }
           
           
          
     }
     
 
-    }
+
